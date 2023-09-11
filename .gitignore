@@ -10,3 +10,6 @@ mlp_blobs.py
 .ipynb_checkpoints
 __pycache__
 tinytensor/nn2.py
+test_better_conv.py
+test_lazy.py
+announcement.txt
