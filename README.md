@@ -8,14 +8,14 @@ It's [micrograd](https://github.com/karpathy/micrograd) but with tensors (of any
 
 micrograd beautifully illustrates how autograd works. But, it only works on scalar values. This is OK for simple MLPs. But it's difficult to use for more complex networks.
 
-tinytensor attempts to keep the simplicity of micrograd while operating on tensors of higher rank as needed for deep learning. Right now, it works for CNNs. The project's goal is to eventually demonstrate RNNs & Transformers while staying extremely simple. 
+tinytensor attempts to keep the simplicity of micrograd while operating on tensors of higher rank as needed for deep learning. Right now, it works for MLPs & CNNs. The project's goal is to eventually demonstrate RNNs & Transformers while staying extremely simple. 
 
 ## Who/What tinytensor is for
 tinytensor is for education. 
 
-It is for people who want to develop an inutitive understanding of how neural networks work.
+With tinytensor, you can understand how each step of a serious neural network works without drowning in code or getting lost in a massive repo.
 
-It works on the same principles as "real" libraries like [pytorch](https://github.com/pytorch/pytorch), [tensorflow](https://github.com/tensorflow/tensorflow), and [tinygrad](https://github.com/tinygrad/tinygrad). But it's super simple.
+It works on the same principles as "real" libraries like [pytorch](https://github.com/pytorch/pytorch) and [tensorflow](https://github.com/tensorflow/tensorflow). But it's super simple.
 
 As of tinytensor's alpha release, pytorch & tensorflow are ~200k - 3M lines of code, respectively. In contrast, the magic of tinytensor happens in about 400 lines of code (plus some basic unit tests & demos).
 
@@ -24,20 +24,20 @@ If you're OK at python programming, are new to neural networks/deep learning, an
 ## Who/What tinytensor is NOT for
 tinytensor is NOT for production-grade deep learning tasks.
 
-Right now, tinytensor is slowww. Like the little engine that could, it slowly climbs the mountain (or rather, descends the gradient) of your neural network model. If you listen very closely to the fans spinning in your computer while tinytensor is training, you'll hear a whisper of, "I think I can, I think I can..." (Yet, like that little engine, it will eventually succeed. Without any tuning other than defining basic kernel sizes,  a tinytensor CNN can comfortably achieve 95-99% accuracy on [MNIST](https://en.wikipedia.org/wiki/MNIST_database)).
+Right now, tinytensor is **slowwwwww**. Especially for models like CNNs that require striding/pooling over inputs.
 
 It lacks many advanced features of the real libraries. 
 
-There are plenty of sharp edges that the authors have not yet found and/or documented yet (although we'll keep documenting and/or fixing these over time).
+There are plenty of sharp edges that the authors have not yet found and/or documented yet (although this will get better over time).
 
 As of the alpha release, there are still asserts everywhere which is not safe for production use.
 
-In short, if you're a serious neural network researcher, data scientist, or engineer working on a commercial project, tinytensor is probably not useful for you.
+In short, if you're a serious neural network researcher, data scientist, or engineer working on a commercial project, tinytensor will not be not useful for you.
 
-While it will eventually be able to build & run almost any neural network, it is not intended to compete with the real libraries. At least not now.
+While it will eventually be able to build & run almost any neural network, it is not intended to compete with the real libraries.
 
 ## Installation
-tinytensor is not yet packaged for distribution. If the community wants it, we'll do it.
+tinytensor is not yet packaged for easy distribution. If the community wants it, we'll do it.
 
 For now:
 ```bash
@@ -47,6 +47,8 @@ git clone https://github.com/username/repository-name.git
 Modify & copy files into your project directly as needed.
 
 ## Usage
+tinytensor tries to follow & encourage functional programming principles as much as possible, though we haven't followed this for backpropagation yet.
+
 ### Tensor operations & autograd
 ```python
 #adding two Tensors
@@ -76,7 +78,7 @@ def _dense(x:Tensor, W:Tensor, B:Tensor,activation: str) -> Tensor:
 ```
 
 ### Combining multiple layers
-The bare bones of a model to solve MNIST. There are other packages to import & variables to define before this.
+Below is an excerpt for a model training on MNIST. There are other packages to import & variables to define before this.
 ```python
 #...
 conv = Conv2d(kernel_shape,image_shape)
@@ -85,11 +87,18 @@ softmax = Softmax(pool.output_shape(),num_classes)
 layers = [conv,pool,softmax]
 
 for i in range(number_samples):
+    #forward pass through each layer
     conv_out = layers[0](X[i])
     pool_out = layers[1](conv_out)
     softmax_out = layers[2](pool_out)
+
+    #calculating loss function
     data_loss = categorical_cross_entropy(y[i],softmax_out)
+
+    #backpropatagion 
     data_loss.backward()
+
+    #applying updated gradients
     grads = [layer.grads() for layer in layers]
     new_layers = [sgd(layer,grad,learning_rate) for layer,grad in zip(layers,grads)]
     layers = new_layers
@@ -104,13 +113,11 @@ More demonstrations will be added as they are completed.
 
 ## What's next?
 * Keep expanding the library until it supports RNN's and Transformers.
-* Add additional loss functions, optimizers, regularization, normalization functions as appropriate & useful.
-* Try to improve performance with some refactoring, parallelization, jit compilation, etc. as appropriate & useful while keeping things simple.
+* Add additional loss functions, regularization functions, normalization functions, and optimizers as appropriate & useful.
+* Refactoring to improve performance. (to a point; the priority will be keeping things simple)
 * (Maybe) Package the repo for distribution.
 
-Unless there are serious innovations that radically improve performance, seamlessly enable execution across various hardware platforms, etc. while keeping things super simple, that will be it. As of now, the author does not see a need for another production-grade deep learning library.
-
-If you want a library that:
+If you want an alternative to PyTorch and TensorFlow that is:
 * is full-featured
 * is able to run performantly across platforms
 * is still quite simple
