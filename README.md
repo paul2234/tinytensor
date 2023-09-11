@@ -41,7 +41,7 @@ tinytensor is not yet packaged for easy distribution. If the community wants it,
 
 For now:
 ```bash
-git clone https://github.com/username/repository-name.git
+git clone https://github.com/paul2234/tinytensor.git
 ```
 
 Modify & copy files into your project directly as needed.
