@@ -38,6 +38,9 @@ class Dense(Layer):
             return A
         
         return _dense(x,self.W,self.B,self.activation)
+
+    def grads(self):
+        return {"W":self.W.grad,"B":None}
     
 class Conv2d:
     def __init__(self,kernel_shape: Tuple[int,int,int,int],image_shape: Tuple[int,int,int,int],W: Tensor = None):

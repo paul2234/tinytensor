@@ -14,3 +14,4 @@ test_better_conv.py
 test_lazy.py
 announcement.txt
 .gitignore
+mlp_troubleshooting.py
